@@ -1,0 +1,3 @@
+from .dispatcher import register_dispatcher
+from .start_handler import start_handler
+from .current_music_inline_query import current_music_inline_query
