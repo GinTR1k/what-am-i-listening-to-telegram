@@ -1,6 +1,7 @@
 from aiogram.types import Message
 
 from telegram_bot.models import (
+    FriendModel,
     TemplateModel,
     TemplatesList,
     UserModel,
@@ -26,6 +27,8 @@ async def unlink_spotify_handler(message: Message):
         spotify_authorized_at=None,
         spotify_expiration_token_at=None,
     ).apply()
+
+    await FriendModel.delete.where(FriendModel.friend_uuid == user.uuid).gino.status()
 
     response_text = await TemplateModel.find_and_render_template(TemplatesList.UNLINK_SPOTIFY_SUCCESS_MESSAGE)
     await message.answer(response_text)

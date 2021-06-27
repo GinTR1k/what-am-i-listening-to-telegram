@@ -35,7 +35,7 @@ class SpotifyView(web.View):
         spotify_user = await spotify.user.me(spotify_auth_token)
         await spotify.close_client()
 
-        await user.update_spotify_tokens(spotify_auth_token)
+        await user.update_spotify_tokens(spotify_auth_token, spotify_user)
 
         web_response_text = await TemplateModel.find_and_render_template(
             TemplatesList.SPOTIFY_AUTHORIZED_WEB_RESPONSE,
