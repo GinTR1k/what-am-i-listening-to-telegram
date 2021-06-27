@@ -15,13 +15,13 @@ from telegram_bot.spotify_client import SpotifyClient
 
 async def start_handler(message: Message):
     """Command /start handler."""
-    telegram_id = message.from_user.id
+    user_telegram_id = message.from_user.id
 
     try:
-        user = await UserModel(telegram_id=telegram_id).create()
+        user = await UserModel(telegram_id=user_telegram_id).create()
         new_registration = True
     except asyncpg.UniqueViolationError:
-        user = await UserModel.query.where(UserModel.telegram_id == telegram_id).gino.first()
+        user = await UserModel.query.where(UserModel.telegram_id == user_telegram_id).gino.first()
         new_registration = False
 
     if new_registration:

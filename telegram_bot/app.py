@@ -15,7 +15,7 @@ from telegram_bot.config import Config
 from telegram_bot.models import db
 from telegram_bot.spotify_client import SpotifyClient
 from telegram_bot.telegram_message_handlers import register_dispatcher
-from web_server_namespaces.spotify import create_spotify_web_app
+from telegram_bot.web_server_namespaces.spotify import create_spotify_web_app
 
 
 class App:
