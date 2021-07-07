@@ -2,6 +2,7 @@ from aiogram.types import (
     ContentType,
     Message,
 )
+from sqlalchemy import and_
 
 from telegram_bot.models import (
     FriendModel,
@@ -34,16 +35,28 @@ async def all_messages_handler(message: Message):
         return await message.answer(response_text)
 
     friend_telegram_id = message.forward_from.id
+
+    if friend_telegram_id == user_telegram_id:
+        return
+
     friend = await UserModel.query.where(UserModel.telegram_id == friend_telegram_id).gino.first()
 
     if not friend or not friend.spotify_access_token:
         response_text = await TemplateModel.find_and_render_template(TemplatesList.ADD_FRIEND_NOT_FOUND_MESSAGE)
         return await message.answer(response_text)
 
-    await FriendModel(
-        user_uuid=user.uuid,
-        friend_uuid=friend.uuid,
-    ).create()
+    friendship = await FriendModel.query.where(
+        and_(
+            FriendModel.user_uuid == user.uuid,
+            FriendModel.friend_uuid == friend.uuid,
+        )
+    ).gino.first()
+
+    if not friendship:
+        await FriendModel(
+            user_uuid=user.uuid,
+            friend_uuid=friend.uuid,
+        ).create()
 
     response_text = await TemplateModel.find_and_render_template(TemplatesList.ADD_FRIEND_SUCCESS_MESSAGE)
     return await message.answer(response_text)

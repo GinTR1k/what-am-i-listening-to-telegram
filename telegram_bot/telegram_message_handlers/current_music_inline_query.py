@@ -33,11 +33,16 @@ async def current_music_inline_query(inline_query: InlineQuery):
 
     friends = [await UserModel.get(friend_record.friend_uuid) for friend_record in friends_records]
 
-    current_track_user_task = asyncio.create_task(get_current_track(user))
+    pending_tasks = set()
+
+    if user.spotify_access_token:
+        current_track_user_task = asyncio.create_task(get_current_track(user))
+        pending_tasks.add(current_track_user_task)
+
     current_track_friends_tasks = {asyncio.create_task(get_current_track(friend)): friend for friend in friends}
+    pending_tasks.update(current_track_friends_tasks)
 
     inline_items = []
-    pending_tasks = (current_track_user_task, *current_track_friends_tasks.keys())
 
     while pending_tasks:
         done_tasks, pending_tasks = await asyncio.wait(pending_tasks)
